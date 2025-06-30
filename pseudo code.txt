@@ -1,0 +1,31 @@
+#pseudo code for AS-RS system, only consider height constraint
+input: length, width, height of all packages
+output: the package is put at which cabinet
+
+define the cabinet from 0 to max number
+# we can think about how to encode these cabinets (encoded by location in order or the distance to the exit)
+cabinets_sorted_by_distance = sort(cabinets)    # based on the distances to the entrance or exit
+current_cabinet = 0 # to record current cabinet usage
+for i in range (number_of_cabinets):
+    i = []
+all_packages = []
+
+# starting to put packages into the cabinet
+while (not done):
+    length, width, height = return_from_sensor
+    # process data to meet the requirements(5cm per movement) of AS-RS machine
+    new_height = height + height % 5
+    
+    # use greedy algorithm to put packages, from the nearest location to entrance
+    residual_space = calculate_residual_space(cabinets_sorted_by_distance[current_cabinet])
+    if (residual_space > new_height):
+        put the package into current_cabinet
+    else:
+        put the package into current_cabinet + 1
+    
+    all_packages.append([package_id, length, width, height])    # record all packages
+    # we can also check previous cabinets that has not been stacked over
+
+
+# after all the packages are put in cabinets, we can start to re-locate
+# use extreme left bottom point heuristic, transformer....
