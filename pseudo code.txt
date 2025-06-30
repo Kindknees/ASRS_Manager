@@ -1,31 +1,83 @@
-#pseudo code for AS-RS system, only consider height constraint
-input: length, width, height of all packages
-output: the package is put at which cabinet
+# =================================================================
+# Pseudo code for AS-RS System
+# =================================================================
 
-define the cabinet from 0 to max number
-# we can think about how to encode these cabinets (encoded by location in order or the distance to the exit)
-cabinets_sorted_by_distance = sort(cabinets)    # based on the distances to the entrance or exit
-current_cabinet = 0 # to record current cabinet usage
-for i in range (number_of_cabinets):
-    i = []
-all_packages = []
+# --- Phase 0: Initial Setup ---
+# 輸入：預計要存入的所有包裹列表 (包含長、寬、高)
+# 輸出：每個包裹最終被存放的櫃子編號，以及整理後的倉儲狀態
+# 假設：櫃子總空間只考慮高度維度進行簡化計算
 
-# starting to put packages into the cabinet
-while (not done):
-    length, width, height = return_from_sensor
-    # process data to meet the requirements(5cm per movement) of AS-RS machine
-    new_height = height + height % 5
-    
-    # use greedy algorithm to put packages, from the nearest location to entrance
-    residual_space = calculate_residual_space(cabinets_sorted_by_distance[current_cabinet])
-    if (residual_space > new_height):
-        put the package into current_cabinet
+# 定義系統參數
+MAX_CABINET_HEIGHT = 250  # 假設每個櫃子最大高度為 200cm
+NUMBER_OF_CABINETS = 50   # 假設有 50 個櫃子
+
+# 初始化所有櫃子
+# cabinets 是一個列表，每個元素代表一個櫃子
+# 每個櫃子內包含：
+# 1. 'packages': 存放於此的包裹列表
+# 2. 'residual_height': 該櫃子剩餘的高度
+cabinets = []
+for i in range(NUMBER_OF_CABINETS):
+    cabinets.append({'packages': [], 'residual_height': MAX_CABINET_HEIGHT})
+sorted_cabinet_order_by_distance = sort(cabinet)    # 將櫃子的順序按照距離先排好
+
+# 建立一個全域的包裹紀錄列表
+all_packages_record = []
+
+# 函數：將數字變成 5 的倍數
+function calculate_processed_height(original_height):
+    # 如果 original_height 本身就是 5 的倍數，則不變
+    if original_height % 5 == 0:
+        return original_height
+    # 否則，向上取到最接近的 5 的倍數
     else:
-        put the package into current_cabinet + 1
+        return original_height - (original_height % 5) + 5
+
+# =================================================================
+# --- Phase 1: Greedy Ingestion (快速存入) ---
+# 目標：以最快速度接收包裹，優先放入距離入口最近的可用櫃子
+# =================================================================
+
+# 假設 incoming_packages_stream 是一個持續提供新包裹的來源
+while incoming_packages_stream is not empty:
+    # 1. 從感測器或資料來源獲取新包裹資訊
+    package_id, length, width, height = get_next_package_from_stream()
     
-    all_packages.append([package_id, length, width, height])    # record all packages
-    # we can also check previous cabinets that has not been stacked over
+    # 2. 處理包裹高度以符合機械手臂需求
+    processed_height = calculate_processed_height(height)
+
+    # 3. 使用貪婪演算法尋找存放位置
+    #    從距離最近的櫃子 (index 0) 開始，找到第一個能放下的櫃子
+    found_cabinet = False
+    for i in sorted_cabinet_order_by_distance:
+        if cabinets[i]['residual_height'] >= processed_height:
+            # 找到位置，將包裹放入
+            package_info = {'id': package_id, 'length': length, 'width': width, 'height': height, 'processed_height': processed_height}
+            
+            cabinets[i]['packages'].append(package_info)
+            cabinets[i]['residual_height'] -= processed_height
+            
+            # 記錄包裹與其位置
+            all_packages_record.append({'package': package_info, 'cabinet_index': i})
+            
+            # 更新計數器並標記已找到
+            found_cabinet = True
+            print(f"包裹 {package_id} 已存入櫃子 {i}")
+            break # 跳出 for 迴圈，處理下一個包裹
+    
+    # 如果所有櫃子都滿了
+    if not found_cabinet:
+        print(f"錯誤：所有櫃子空間已滿，無法存入新包裹 (高: {height})")
+        # 此處可以加入警報或處理機制
 
 
-# after all the packages are put in cabinets, we can start to re-locate
-# use extreme left bottom point heuristic, transformer....
+# =================================================================
+# --- Phase 2: Relocation & Optimization (整理儲位) ---
+# 目標：重新整理所有已存入的包裹，最小化佔用的總櫃子數量或總空間
+# =================================================================
+
+function optimize_storage():
+    # 進行重新排序演算法的邏輯
+
+# 執行優化程序
+optimize_storage()
