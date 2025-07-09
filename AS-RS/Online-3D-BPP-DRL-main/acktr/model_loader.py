@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-import gym
+import gymnasium as gym
 import copy
 from acktr.model import Policy
 from acktr.utils import get_rotation_mask, get_possible_position

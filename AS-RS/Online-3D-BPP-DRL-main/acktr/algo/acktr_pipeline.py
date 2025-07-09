@@ -25,7 +25,7 @@ class ACKTR():
         self.invaild_coef = invaild_coef
         self.max_grad_norm = max_grad_norm
 
-        self.loss_func = nn.MSELoss(reduce=False, size_average=True)
+        self.loss_func = nn.MSELoss(reduction='none')
         self.entropy_coef = entropy_coef
         self.args = args
 

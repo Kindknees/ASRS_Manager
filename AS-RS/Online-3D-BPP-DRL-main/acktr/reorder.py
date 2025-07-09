@@ -1,6 +1,6 @@
 import numpy as np
 import copy
-import gym
+import gymnasium as gym
 import math
 import itertools
 
