@@ -9,3 +9,4 @@ mpi4py
 retro
 tensorflow
 joblib
+scipy
