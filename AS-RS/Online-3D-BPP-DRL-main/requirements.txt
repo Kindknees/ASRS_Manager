@@ -1,0 +1,11 @@
+numpy
+torch
+gym
+transforms3d
+tensorboardX
+protobuf
+opencv-python
+mpi4py
+retro
+tensorflow
+joblib
