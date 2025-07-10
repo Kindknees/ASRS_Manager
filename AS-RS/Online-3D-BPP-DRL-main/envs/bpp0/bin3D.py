@@ -107,9 +107,10 @@ class PackingGame(gym.Env):
 
         if not succeeded:
             reward = 0.0
-            done = True
+            terminated = True # 放置失敗，任務終止
+            truncated = False # 非因時間限制而截斷
             info = {'counter':len(self.space.boxes), 'ratio':self.space.get_ratio(), 'mask':np.ones(shape=self.act_len)}
-            return self.cur_observation, reward, done, info
+            return self.cur_observation, reward, terminated, truncated, info
 
         box_ratio = self.get_box_ratio()
 
