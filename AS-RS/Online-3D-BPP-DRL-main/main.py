@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+import datetime
 from collections import deque
 import numpy as np
 import torch
@@ -29,7 +30,8 @@ def test_model(args):
     unified_test(model_url, args)
 
 def train_model(args):
-    custom = input('please input the test name: ')
+    current_time = datetime.datetime.now()
+    custom = str(current_time.strftime("%Y-%m-%d %H:%M:%S"))
     time_now = time.strftime('%Y.%m.%d-%H-%M', time.localtime(time.time()))
 
     env_name = args.env_name
