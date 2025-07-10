@@ -1,6 +1,6 @@
 numpy
 torch
-gym
+gymnasium
 transforms3d
 tensorboardX
 protobuf

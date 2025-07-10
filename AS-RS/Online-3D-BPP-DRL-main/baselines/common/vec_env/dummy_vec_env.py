@@ -22,7 +22,7 @@ class DummyVecEnv(VecEnv):
         self.keys, shapes, dtypes = obs_space_info(obs_space)
 
         self.buf_obs = { k: np.zeros((self.num_envs,) + tuple(shapes[k]), dtype=dtypes[k]) for k in self.keys }
-        self.buf_dones = np.zeros((self.num_envs,), dtype=np.bool)
+        self.buf_dones = np.zeros((self.num_envs,), dtype=np.bool_)
         self.buf_rews  = np.zeros((self.num_envs,), dtype=np.float32)
         self.buf_infos = [{} for _ in range(self.num_envs)]
         self.actions = None
@@ -45,19 +45,20 @@ class DummyVecEnv(VecEnv):
     def step_wait(self):
         for e in range(self.num_envs):
             action = self.actions[e]
-            # if isinstance(self.envs[e].action_space, spaces.Discrete):
-            #    action = int(action)
+            # 接收新 API 的五個返回值
+            obs, self.buf_rews[e], terminated, truncated, self.buf_infos[e] = self.envs[e].step(action)
+            # 為舊 API 重新組合 done 旗標
+            self.buf_dones[e] = terminated or truncated
 
-            obs, self.buf_rews[e], self.buf_dones[e], self.buf_infos[e] = self.envs[e].step(action)
             if self.buf_dones[e]:
-                obs = self.envs[e].reset()
+                obs, _ = self.envs[e].reset() # 解開 (obs, info) 元組
             self._save_obs(e, obs)
         return (self._obs_from_buf(), np.copy(self.buf_rews), np.copy(self.buf_dones),
                 self.buf_infos.copy())
 
     def reset(self):
         for e in range(self.num_envs):
-            obs = self.envs[e].reset()
+            obs, _ = self.envs[e].reset() # 解開 (obs, info) 元組
             self._save_obs(e, obs)
         return self._obs_from_buf()
 

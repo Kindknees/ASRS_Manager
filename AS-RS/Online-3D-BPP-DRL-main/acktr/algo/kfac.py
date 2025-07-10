@@ -188,7 +188,7 @@ class KFACOptimizer(optim.Optimizer):
 
                 self.modules.append(module)
                 module.register_forward_pre_hook(self._save_input)
-                module.register_backward_hook(self._save_grad_output)
+                module.register_full_backward_hook(self._save_grad_output)
 
     def step(self):
         # Add weight decay

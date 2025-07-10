@@ -28,6 +28,20 @@ try:
 except ImportError:
     pass
 
+class SeedWrapper(gym.Wrapper):
+    def __init__(self, env, seed_val):
+        super().__init__(env)
+        self._seed_val = seed_val
+
+    def reset(self, **kwargs):
+        if 'seed' not in kwargs:
+            kwargs['seed'] = self._seed_val
+
+        if self._seed_val is not None:
+            self._seed_val = None
+
+        return self.env.reset(**kwargs)
+
 def make_env(env_id, seed, rank, log_dir, allow_early_resets, args):
     def _thunk():
         if env_id.startswith("dm"):
@@ -40,11 +54,14 @@ def make_env(env_id, seed, rank, log_dir, allow_early_resets, args):
                            box_set = args.box_size_set, container_size = args.container_size, test = False,
                            data_name = None, data_type = args.data_type)
 
+        initial_seed = seed + rank if seed is not None else None
+        env = SeedWrapper(env, seed_val=initial_seed)
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
+        
         # if is_atari:
         #     env = make_atari(env_id)
-        env.seed(seed + rank)
+        # env.seed(seed + rank)
 
         obs_shape = env.observation_space.shape
 
@@ -121,11 +138,16 @@ def make_vec_envs(env_name,
 # Checks whether done was caused my timit limits or not
 class TimeLimitMask(gym.Wrapper):
     def step(self, action):
-        obs, rew, done, info = self.env.step(action)
+        # 接收新 API 的五個返回值
+        obs, rew, terminated, truncated, info = self.env.step(action)
+        # 為了舊版邏輯重新組合 done 旗標
+        done = terminated or truncated
+
         if done and self.env._max_episode_steps == self.env._elapsed_steps:
             info['bad_transition'] = True
 
-        return obs, rew, done, info
+        # 將五個返回值傳回給上一層的呼叫者
+        return obs, rew, terminated, truncated, info
 
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)

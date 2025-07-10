@@ -52,11 +52,11 @@ class PackingGame(gym.Env):
         z_plain = np.ones(self.space.plain_size[:2], dtype=np.int32) * self.next_box[2]
         return (x_plain, y_plain, z_plain)
 
-    def reset(self):
+    def reset(self,  **kwargs):
         self.box_creator.reset()
         self.space = Space(*self.bin_size)
         self.box_creator.generate_box_size()
-        return self.cur_observation
+        return self.cur_observation.astype(np.float32), {}
 
     @property
     def cur_observation(self):
@@ -107,9 +107,10 @@ class PackingGame(gym.Env):
 
         if not succeeded:
             reward = 0.0
-            done = True
+            terminated = True # 放置失敗，任務終止
+            truncated = False # 非因時間限制而截斷
             info = {'counter':len(self.space.boxes), 'ratio':self.space.get_ratio(), 'mask':np.ones(shape=self.act_len)}
-            return self.cur_observation, reward, done, info
+            return self.cur_observation, reward, terminated, truncated, info
 
         box_ratio = self.get_box_ratio()
 
@@ -124,5 +125,10 @@ class PackingGame(gym.Env):
         info['counter'] = len(self.space.boxes)
         info['ratio'] = self.space.get_ratio()
         # info['mask'] = self.get_possible_position().reshape((-1,))
-        return self.cur_observation, reward, done, info
+        terminated = False
+        truncated = False
+        if done:
+            terminated = True 
+        obs = self.cur_observation.astype(np.float32)
+        return obs, reward, terminated, truncated, info
 

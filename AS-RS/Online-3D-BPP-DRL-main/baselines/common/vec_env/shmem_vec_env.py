@@ -14,7 +14,7 @@ _NP_TO_CT = {np.float32: ctypes.c_float,
              np.int32: ctypes.c_int32,
              np.int8: ctypes.c_int8,
              np.uint8: ctypes.c_char,
-             np.bool: ctypes.c_bool}
+             np.bool_: ctypes.c_bool}
 
 
 class ShmemVecEnv(VecEnv):
@@ -122,11 +122,13 @@ def _subproc_worker(pipe, parent_pipe, env_fn_wrapper, obs_bufs, obs_shapes, obs
         while True:
             cmd, data = pipe.recv()
             if cmd == 'reset':
-                pipe.send(_write_obs(env.reset()))
+                obs, _ = env.reset()
+                pipe.send(_write_obs(obs))
             elif cmd == 'step':
-                obs, reward, done, info = env.step(data)
+                obs, reward, terminated, truncated, info = env.step(data)
+                done = terminated or truncated
                 if done:
-                    obs = env.reset()
+                    obs, _ = env.reset()
                 pipe.send((_write_obs(obs), reward, done, info))
             elif cmd == 'render':
                 pipe.send(env.render(mode='rgb_array'))
