@@ -81,7 +81,7 @@ def get_args():
         '--log_interval', default=10, type=int,  help='log interval, one log per n updates (default: 10)'
     )
     parser.add_argument(
-        '--save_model', action='store_true', default=False,  help='whether to save training model'
+        '--save_model', action='store_true', default=True,  help='whether to save training model'
     )
     parser.add_argument(
         '--cases', default=100, type=int,  help='the number of sequences used for test (default 100)'
@@ -109,6 +109,9 @@ def get_args():
     )
     parser.add_argument(
         '--seed', default=1, type=int,  help='random seed (default: 1)'
+    )
+    parser.add_argument(
+        '--epochs', default=1000, type=int,  help='number of epochs to train (default: 1000)'
     )
     args = parser.parse_args()
 

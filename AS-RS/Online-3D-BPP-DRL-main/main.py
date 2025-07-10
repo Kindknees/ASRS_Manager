@@ -147,8 +147,8 @@ def train_model(args):
 
     j = 0
     index = 0
-    while True:
-        j += 1
+    epochs = args.epochs
+    for j in range(epochs):
         for step in range(args.num_steps):
             # Sample actions
             with torch.no_grad():
@@ -220,6 +220,15 @@ def train_model(args):
                 writer.add_scalar("The action loss", action_loss, j)
                 writer.add_scalar('Probability loss', prob_loss, j)
                 writer.add_scalar("Mask loss", graph_loss, j) # add mask loss
+    
+    print("Training finished. Saving final model...")
+    final_save_path = os.path.join(data_path, env_name + time_now + "_final.pt")
+    torch.save([
+        actor_critic.state_dict(),
+        getattr(utils.get_vec_normalize(envs), 'ob_rms', None)
+    ], final_save_path)
+    print(f"Final model saved to {final_save_path}")
+    envs.close()
 
 
 def registration_envs():
