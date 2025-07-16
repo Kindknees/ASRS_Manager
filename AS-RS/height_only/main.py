@@ -3,22 +3,24 @@ from bin import Bin
 from item import Item
 from first_fit import FIRST_FIT
 from best_fit import BEST_FIT
+import pandas as pd
 
 if __name__ == '__main__':
     # --- 貨物清單定義 ---
     # width, height, depth, rotation, id=None
-    item_list_data = [
-        Item(2, 8, 8, 1, 'LargeTable'), 
-        Item(3, 4, 5, 1, 'BoxA'),
-        Item(4, 6, 4, 1, 'BoxB'),
-        Item(5, 7, 5, 1, 'BoxC'),
-        Item(1, 1, 12, 1, 'Pole'),
-        Item(12, 2, 12, 1, 'TooWide'),
-    ]
+    item_list_data = []
+    df = pd.read_csv("./items.csv")
+    for row in df.itertuples(index=False):
+        width  = row.width
+        height = row.height
+        depth = row.depth
+        rotation = row.can_rotate
+        id = row.id
+        item_list_data.append(Item(width, height, depth, rotation, id))
 
     # --- 一個櫃子的尺寸 ---
     # 寬度、高度、深度、最小調整長度
-    bin_dimensions = (10, 10, 10, 1)
+    bin_dimensions = (60, 200, 60, 5)
 
     # =================================================================
     # 情境一：Best Fit (Offline) - 拿到完整清單一次性處理
@@ -52,9 +54,8 @@ if __name__ == '__main__':
     
     # 模擬物品一件件地進入系統
     for item in item_list_data:
-        print(f"\nProcessing incoming item: {item.id}")
         was_placed = FIRST_FIT.first_fit_1D_stacking(ff_bins, item, bin_dimensions)
-        if not was_placed:
+        if was_placed is False:
             ff_unplaced.append(item)
 
     print("\n--- Final State for First Fit ---")

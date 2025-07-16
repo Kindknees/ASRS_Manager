@@ -1,3 +1,6 @@
+import math
+import utils
+
 class Bin:
     def __init__(self, width, height, depth, min_adjust_length):
         self.width = width
@@ -9,15 +12,17 @@ class Bin:
     def get_current_height(self):
         if not self.items:
             return 0
-        return max(item.position[1] + item.placed_dimensions[1] for item in self.items)
+        return max(item.position[1] + utils.get_adjusted_height(item.placed_dimensions[1], self.min_adjust_length) for item in self.items)
 
     def can_place(self, item, position):
         """
         檢查物品是否可以在指定位置放置，而不與其他已放置物品重疊或超出邊界。
         """
+        adjusted_item_height = utils.get_adjusted_height(item.placed_dimensions[1], self.min_adjust_length)
+
         # 檢查邊界
         if (position[0] + item.placed_dimensions[0] > self.width or
-            position[1] + item.placed_dimensions[1] > self.height or
+            position[1] + adjusted_item_height > self.height or
             position[2] + item.placed_dimensions[2] > self.depth):
             return False
 
@@ -34,13 +39,13 @@ class Bin:
         # item2 已經有 position 屬性
         pos2 = item2.position
         dim2 = item2.placed_dimensions
-
-        # item1 的維度
         dim1 = item1.placed_dimensions
 
-        # 檢查 x, y, z 軸上是否有間隔
+        adjusted_dim1_h = utils.get_adjusted_height(dim1[1], self.min_adjust_length)
+        adjusted_dim2_h = utils.get_adjusted_height(dim2[1], self.min_adjust_length)
+
         x_overlap = (pos1[0] < pos2[0] + dim2[0]) and (pos1[0] + dim1[0] > pos2[0])
-        y_overlap = (pos1[1] < pos2[1] + dim2[1]) and (pos1[1] + dim1[1] > pos2[1])
+        y_overlap = (pos1[1] < pos2[1] + adjusted_dim2_h) and (pos1[1] + adjusted_dim1_h > pos2[1])
         z_overlap = (pos1[2] < pos2[2] + dim2[2]) and (pos1[2] + dim1[2] > pos2[2])
 
         return x_overlap and y_overlap and z_overlap
@@ -62,6 +67,6 @@ class Bin:
         top_item = max(self.items, key=lambda i: i.position[1] + i.placed_dimensions[1])
     
         # 新的放置點在該物品的正上方
-        pos_height = top_item.position[1] + top_item.placed_dimensions[1]
+        pos_height = self.get_current_height()
         
         return [(0, pos_height, 0)]

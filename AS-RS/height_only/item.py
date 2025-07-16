@@ -1,5 +1,5 @@
 class Item:
-    def __init__(self, width, height, depth, rotation, id=None):
+    def __init__(self, width, height, depth, rotation, id):
         self.width = width
         self.height = height
         self.depth = depth
