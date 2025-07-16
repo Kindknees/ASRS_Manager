@@ -5,35 +5,45 @@ import utils
 
 class BEST_FIT:
     """
-    Best Fit (Offline) - 專為垂直堆疊設計。
-    主要考慮高度限制，但同時檢查長寬是否符合櫃子底面積。
+    Implements the Best Fit (Offline) algorithm for 1D bin packing.
+
+    This algorithm is tailored for vertical stacking scenarios, where the primary
+    goal is to minimize the total height of items in each bin. It processes
+    the entire list of items at once to find an optimized placement.
     """
 
     @staticmethod
     def best_fit(items:list, bin_dimensions):
         """
-        使用 Best Fit 演算法進行 3D Bin Packing。
+        Applies the offline Best Fit algorithm to pack 3D items into bins.
 
-        :param items: 物品清單 (list of Item objects)
-        :param bin_dimensions: 貨櫃尺寸 (width, height, depth)
-        :return: (已使用的貨櫃清單, 未能放入的物品清單)
+        This method first sorts items by height. For each item, if it is rotatable, it determines
+        an optimal, height-minimized orientation. It then searches all existing
+        bins to find the placement that results in the lowest new total height.
+        If no suitable space is found in existing bins, a new bin is created.
+
+        :param items: A list of Item objects to be packed.
+        :param bin_dimensions: A tuple representing the dimensions
+                               (width, height, depth, min_adjust_length) of the bins.
+        :return: A tuple containing two lists: (list of used Bin objects,
+                 list of unplaced Item objects).
         """
         bins = []
         unplaced_items = []
         bin_width, bin_height, bin_depth, bin_min_adjust_length = bin_dimensions
 
-        items.sort(key=lambda i: i.height, reverse=True)
-
+        # rotate items to height-minimized orientation
         for item in items:
             optimal_orientation = utils.get_optimal_dimension(item, bin_dimensions)
             
             if optimal_orientation is None:
                 unplaced_items.append(item)
-                continue
-            
+                continue  
             item.placed_dimensions = optimal_orientation
+        items.sort(key=lambda i: i.placed_dimensions[1], reverse=True)
 
-            # 開始為這個已確定方向的物品尋找最佳位置
+        #best fit algorithm start
+        for item in items:
             best_bin = None
             best_position = None
             # 評分標準：尋找能使物品放置後，貨櫃總高度最低的方案

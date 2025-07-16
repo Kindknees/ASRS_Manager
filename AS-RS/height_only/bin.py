@@ -1,4 +1,3 @@
-import math
 import utils
 
 class Bin:
@@ -6,7 +5,7 @@ class Bin:
         self.width = width
         self.height = height
         self.depth = depth
-        self.min_adjust_length = min_adjust_length  # 櫃子每次進行調整時的單位長度
+        self.min_adjust_length = min_adjust_length
         self.items = []
 
     def get_current_height(self):
@@ -15,9 +14,6 @@ class Bin:
         return max(item.position[1] + utils.get_adjusted_height(item.placed_dimensions[1], self.min_adjust_length) for item in self.items)
 
     def can_place(self, item, position):
-        """
-        檢查物品是否可以在指定位置放置，而不與其他已放置物品重疊或超出邊界。
-        """
         adjusted_item_height = utils.get_adjusted_height(item.placed_dimensions[1], self.min_adjust_length)
 
         # 檢查邊界
@@ -34,7 +30,7 @@ class Bin:
 
     def _intersects(self, item1, pos1, item2):
         """
-        檢查兩個物品是否重疊。
+        check whether two items are overlapped
         """
         # item2 已經有 position 屬性
         pos2 = item2.position
