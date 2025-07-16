@@ -40,13 +40,15 @@ class BEST_FIT:
                 unplaced_items.append(item)
                 continue  
             item.placed_dimensions = optimal_orientation
+        # print (f"original items: {[i.id for i in items[:10]]}")
         items.sort(key=lambda i: i.placed_dimensions[1], reverse=True)
+        # print (f"sorted items: {[i.id for i in items[:10]]}")
 
         #best fit algorithm start
         for item in items:
             best_bin = None
             best_position = None
-            # 評分標準：尋找能使物品放置後，貨櫃總高度最低的方案
+            # scoring: # find the bin that results in the lowest new total height
             min_resulting_height = float('inf')
 
             for bin in bins:
@@ -66,7 +68,6 @@ class BEST_FIT:
             # else: open a new bin
             else:
                 new_bin = Bin(bin_width, bin_height, bin_depth, bin_min_adjust_length)
-                # 放在新貨櫃的 (0, 0, 0) 位置
                 if new_bin.can_place(item, (0, 0, 0)):
                     new_bin.place_item(item, (0, 0, 0))
                     bins.append(new_bin)

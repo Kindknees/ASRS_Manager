@@ -4,7 +4,7 @@ import csv
 def generate_random_item(num_items, min_width, max_width, min_height, max_height, min_depth, max_depth, can_rotate=1):
     items_data = []
 
-    # 添加 CSV 標頭
+    # CSV header
     items_data.append(['width', 'height', 'depth', 'can_rotate', 'id'])
 
     for i in range(1, num_items + 1):
@@ -20,7 +20,6 @@ def generate_random_item(num_items, min_width, max_width, min_height, max_height
         id = str(i)
         items_data.append([width, height, depth, rotation, id])
 
-    # 將資料寫入 CSV 檔案
     csv_file_name = 'items.csv'
     with open(csv_file_name, 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile)
@@ -28,7 +27,6 @@ def generate_random_item(num_items, min_width, max_width, min_height, max_height
 
     print(f"successfully generate {num_items} items to '{csv_file_name}'。")
 
-# 執行函式
 if __name__ == "__main__":
     config = {
         "num_items":200,

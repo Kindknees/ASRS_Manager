@@ -16,13 +16,12 @@ class Bin:
     def can_place(self, item, position):
         adjusted_item_height = utils.get_adjusted_height(item.placed_dimensions[1], self.min_adjust_length)
 
-        # 檢查邊界
+        # check if the item fits within the bin dimensions at the given position
         if (position[0] + item.placed_dimensions[0] > self.width or
             position[1] + adjusted_item_height > self.height or
             position[2] + item.placed_dimensions[2] > self.depth):
             return False
 
-        # 檢查與已放置物品的重疊
         for placed_item in self.items:
             if self._intersects(item, position, placed_item):
                 return False
@@ -32,7 +31,6 @@ class Bin:
         """
         check whether two items are overlapped
         """
-        # item2 已經有 position 屬性
         pos2 = item2.position
         dim2 = item2.placed_dimensions
         dim1 = item1.placed_dimensions
@@ -47,22 +45,15 @@ class Bin:
         return x_overlap and y_overlap and z_overlap
 
     def place_item(self, item, position):
-        """
-        將物品放置在指定位置。
-        """
         item.position = position
         self.items.append(item)
 
     def get_possible_positions(self, item):
         """
-        為新物品生成可能的放置點。
+        generate possible positions for placing an item in the bin.
         """
         if not self.items:
-            return [(0, 0, 0)]
-        
-        top_item = max(self.items, key=lambda i: i.position[1] + i.placed_dimensions[1])
-    
-        # 新的放置點在該物品的正上方
+            return [(0, 0, 0)] 
+        # due to the height-only packing strategy, we only consider the top of the bin
         pos_height = self.get_current_height()
-        
         return [(0, pos_height, 0)]

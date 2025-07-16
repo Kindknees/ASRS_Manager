@@ -6,8 +6,8 @@ from best_fit import BEST_FIT
 import pandas as pd
 
 if __name__ == '__main__':
-    # --- 貨物清單定義 ---
-    # width, height, depth, rotation, id=None
+    # item list data
+    # width, height, depth, rotation, id
     item_list_data = []
     df = pd.read_csv("./items.csv")
     for row in df.itertuples(index=False):
@@ -18,17 +18,16 @@ if __name__ == '__main__':
         id = row.id
         item_list_data.append(Item(width, height, depth, rotation, id))
 
-    # --- 一個櫃子的尺寸 ---
-    # 寬度、高度、深度、最小調整長度
+    # bin dimensions
+    # width, height, depth, min_adjust_length
     bin_dimensions = (60, 200, 60, 5)
 
     # =================================================================
-    # 情境一：Best Fit (Offline) - 拿到完整清單一次性處理
+    # phase 1：Best Fit (Offline)
     # =================================================================
     print("--- Running Best Fit (Offline) Algorithm ---")
-    # 每次都要重新創建物品列表，因為演算法會修改物品的內部狀態
-    
-    bf_bins, bf_unplaced = BEST_FIT.best_fit(items=item_list_data, bin_dimensions=bin_dimensions)
+    bf_items_list = item_list_data.copy()
+    bf_bins, bf_unplaced = BEST_FIT.best_fit(items=bf_items_list, bin_dimensions=bin_dimensions)
     
     print(f"Total bins used: {len(bf_bins)}")
     for i, bin_obj in enumerate(bf_bins):
@@ -44,17 +43,17 @@ if __name__ == '__main__':
 
 
     # =================================================================
-    # 情境二：First Fit (Online) - 模擬物品一件件到達
+    # phase 2：First Fit (Online)
     # =================================================================
     print("\n\n" + "="*50)
     print("--- Running First Fit (Online) Algorithm ---")
     
     ff_bins = []
     ff_unplaced = []
+    ff_item_list = item_list_data.copy()
     
-    # 模擬物品一件件地進入系統
-    for item in item_list_data:
-        was_placed = FIRST_FIT.first_fit_1D_stacking(ff_bins, item, bin_dimensions)
+    for item in ff_item_list:
+        was_placed = FIRST_FIT.first_fit(ff_bins, item, bin_dimensions)
         if was_placed is False:
             ff_unplaced.append(item)
 

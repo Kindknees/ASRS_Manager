@@ -3,7 +3,7 @@ import utils
 
 class FIRST_FIT:    
     @staticmethod            
-    def first_fit_1D_stacking(current_bins, item_to_place, bin_dimensions):
+    def first_fit(current_bins, item_to_place, bin_dimensions):
         bin_width, bin_height, bin_depth, bin_min_adjust_length = bin_dimensions
         item_dimension = utils.get_optimal_dimension(item_to_place, bin_dimensions)
 
@@ -25,7 +25,7 @@ class FIRST_FIT:
 
         adjusted_height = utils.get_adjusted_height(h, bin_min_adjust_length)
 
-        # 檢查高度是否符合一個全新的空櫃子
+        # check if the item can fit in a new bin
         if (adjusted_height <= bin_height):
             new_bin = Bin(width=bin_width, height=bin_height, depth=bin_depth, min_adjust_length=bin_min_adjust_length)
             new_bin.place_item(item_to_place, (0, 0, 0))
