@@ -45,7 +45,7 @@ def get_args():
         '--algorithm', default='acktr', type=str,  help='algorithm used, acktr|ppo|a2c'
     )
     parser.add_argument(
-        '--gamma', default=1.0, type=float,  help='discount factor for rewards (default: 1.0)'
+        '--gamma', default=0.9, type=float,  help='discount factor for rewards (default: 1.0)'
     )
     parser.add_argument(
         '--entropy_coef', default=0.01, type=float,  help='entropy term coefficient (default: 0.01)'
@@ -60,7 +60,7 @@ def get_args():
         '--hidden_size', default=256, type=int,  help='hidden layer cell number (default: 256)'
     )
     parser.add_argument(
-        '--learning_rate', default=1e-6, type=float,  help='learning rate for a2c (default: 1e-6)'
+        '--lr', default=1e-6, type=float,  help='learning rate for a2c (default: 1e-6)'
     )
     parser.add_argument(
         '--eps', default=1e-5, type=float,  help='RMSprop optimizer epsilon (default: 1e-5)'
