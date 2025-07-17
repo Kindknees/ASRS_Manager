@@ -1,11 +1,15 @@
 import utils
 
 class Bin:
-    def __init__(self, width, height, depth, min_adjust_length):
+    def __init__(self, width, height, depth, min_adjust_length, id):
         self.width = width
         self.height = height
         self.depth = depth
         self.min_adjust_length = min_adjust_length
+        self.id = id
+        self.items = []
+
+    def reset(self):
         self.items = []
 
     def get_current_height(self):
@@ -47,13 +51,3 @@ class Bin:
     def place_item(self, item, position):
         item.position = position
         self.items.append(item)
-
-    def get_possible_positions(self, item):
-        """
-        generate possible positions for placing an item in the bin.
-        """
-        if not self.items:
-            return [(0, 0, 0)] 
-        # due to the height-only packing strategy, we only consider the top of the bin
-        pos_height = self.get_current_height()
-        return [(0, pos_height, 0)]
