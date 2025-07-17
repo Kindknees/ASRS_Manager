@@ -4,6 +4,7 @@ from item import Item
 from first_fit import FIRST_FIT
 from best_fit import BEST_FIT
 import pandas as pd
+from visualization import plot_bins
 
 if __name__ == '__main__':
     # item list data
@@ -11,12 +12,15 @@ if __name__ == '__main__':
     item_list_data = []
     df = pd.read_csv("./items.csv")
     for row in df.itertuples(index=False):
-        width  = row.width
-        height = row.height
-        depth = row.depth
-        rotation = row.can_rotate
-        id = row.id
-        item_list_data.append(Item(width, height, depth, rotation, id))
+        item_config = {
+            "width": row.width,
+            "height": row.height,
+            "depth": row.depth,
+            "rotation": row.can_rotate,  # 1 if item is allowed to rotate, 0 otherwise
+            "weight": row.weight,
+            "id": row.id
+        }
+        item_list_data.append(Item(**item_config))
 
     # bin dimensions
     # width, height, depth, min_adjust_length
@@ -41,6 +45,7 @@ if __name__ == '__main__':
         for item in bf_unplaced:
             print(f"  - Item {item.id}")
 
+    plot_bins(bf_bins, bin_dimensions, "Best Fit Result")
 
     # =================================================================
     # phase 2：First Fit (Online)
@@ -69,3 +74,5 @@ if __name__ == '__main__':
         print("\nUnplaced items (too large for an empty bin):")
         for item in ff_unplaced:
             print(f"  - Item {item.id}")
+
+    plot_bins(ff_bins, bin_dimensions, "First Fit Result")
