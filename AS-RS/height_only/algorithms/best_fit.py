@@ -50,6 +50,7 @@ def best_fit(items:list, all_bins, bin_dimensions, offline_priority=None):
                     min_resulting_height = resulting_height
                     best_position = position
                     item.placed_bin = bin.id
+                    best_bin_id = bin_id
                     best_bin = bin
         
         # if best bin is found, put the item to the bin
