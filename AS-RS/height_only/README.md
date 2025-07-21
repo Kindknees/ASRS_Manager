@@ -5,30 +5,37 @@
 - 即時動態儲位指派情境：針對倉儲作業中有新貨物需要立刻入庫的情形，系統將即時為單一儲位群組（例如特定巷道或區域）的新進貨物推薦適當的儲存位置。目標是在不延誤自動化設備運轉的前提下，快速決定每件貨物應存放於哪個儲位，以平衡倉儲空間利用與取貨效率。
 - 靜態批次儲位最佳化情境：針對較長時間尺度的入庫規劃或庫存重組，系統可在離線模式下對單一儲位群組內的多筆貨物安排最優儲位配置。目標是最佳化全局的儲位使用效率，包括提高空間利用率、降低未來取貨路徑距離以及避免某些區域過度集中存放導致作業瓶頸。
 
-![schematic](./schematic.png)
+![schematic](./visualization/schematic.png)
 
 ## 功能特色
 
 - 3D 空間模擬：以 3D 向量（寬、高、深）表示物品與貨櫃尺寸。
-- 垂直堆疊最佳化：演算法專為垂直堆疊設計，主要目標是最小化堆疊的總高度。 
+- 垂直堆疊最佳化：演算法專為垂直堆疊設計，主要目標是透過最小化堆疊的總高度，以達到最小化使用的櫃子數量。 
 - 兩種演算法實作：
     * Best Fit (離線)：一次性取得所有物品清單，透過排序與評分，找出能讓每個物品放置後總高度增加最少的最佳位置。
     * First Fit (線上)：模擬物品一件件抵達的情境，並將物品放入第一個找到的、足夠容納的貨櫃中。
 - 物品旋轉：支援物品旋轉，以找出最節省高度的擺放方式。
-- 可調整的貨架高度：獨特的 `min_adjust_length` 參數，讓模擬更貼近真實倉儲情境。 
+- 可調整的貨架高度：`min_adjust_length` 參數，提供調整倉儲的最小移動單位。 
 
 ## 專案結構
 
 
-height_only/  
-    ├── main.py             # 專案主程式進入點  
-    ├── item.py             # 定義 Item 物件  
-    ├── bin.py              # 定義 Bin (貨櫃) 物件  
-    ├── best_fit.py         # 實作 Best Fit 演算法  
-    ├── first_fit.py        # 實作 First Fit 演算法  
-    ├── random_item.py      # 隨機產生隨機物品資料，可以於下方config設定各種參數  
-    └── items.csv           # 從random_item.py產生出來的csv檔案，主程式main.py也會從這裡讀入物品清單  
-
+.
+├── algorithms
+│   ├── best_fit.py     # 實作 Best Fit 演算法  
+│   └── first_fit.py    # 實作 First Fit 演算法  
+├── ASRSManager.py
+├── bin.py      # 定義 Bin (貨櫃) 物件  
+├── config.yaml     # 整體專案的設定，包括櫃子限制、櫃子擺放順序以及
+├── item.py     # 定義 Item 物件  
+├── items.csv
+├── main.py     # 專案使用範例  
+├── random_item.py      # 隨機產生隨機物品資料，可以於下方config設定各種參數  
+├── utils.py
+└── visualization       # 視覺化
+    ├── schematic.png
+    ├── schematic.py
+    └── visualization.py   
 
 ## 核心元件
 

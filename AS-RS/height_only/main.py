@@ -31,3 +31,13 @@ if __name__ == '__main__':
         print(f"reorganization successful!")
     else:
         print(f"reorganization failed.")
+
+    # ===============================================================
+    # Phase 3: Retrieve Items
+    # ===============================================================
+    retrieved_item_id = 10
+    retrieved_item = manager.retrieve_item(retrieved_item_id)  # return an item object or None if not found
+    if retrieved_item:
+        print(f"Retrieved item {retrieved_item.id} placed at bin {retrieved_item.placed_bin} at position {retrieved_item.position}.")
+    else: 
+        print(f"Item {retrieved_item_id} not found.")

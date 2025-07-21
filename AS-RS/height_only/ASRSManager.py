@@ -76,8 +76,8 @@ class ASRSManager:
             return False
 
         # 2. reset all bins
-        for bin_id in self.offline_priority:
-            self.bins[bin_id].reset()
+        for bin_obj in self.bins.values():
+            bin_obj.reset()
     
         # 3. do the Best Fit algorithm
         unplaced_items = best_fit(items=items_to_reorganize, 
@@ -89,3 +89,15 @@ class ASRSManager:
             return True
         else:
             return False
+    
+    def retrieve_item(self, item_id:int):
+        """
+        Retrieve an item from the ASRS system.
+        :param item_id: ID of the item to be retrieved.
+        :return: Item object if found, None otherwise.
+        """
+        for bin_obj in self.bins.values():
+            for item in bin_obj.items:
+                if item.id == item_id:
+                    return item
+        return None
