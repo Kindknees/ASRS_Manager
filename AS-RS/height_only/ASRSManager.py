@@ -3,6 +3,7 @@ from bin import Bin
 from item import Item
 from algorithms.first_fit import first_fit
 from algorithms.best_fit import best_fit
+from visualization import visualization
 
 class ASRSManager:
     """
@@ -101,3 +102,10 @@ class ASRSManager:
                 if item.id == item_id:
                     return item
         return None
+    
+    def visualize_bins(self, bin_id:int, save_path=None):
+        """
+        Visualize the current state of the bins in the ASRS system.
+        This method prints the IDs of items in each bin.
+        """
+        visualization.plot_bin(self.bins, bin_id, save_path=save_path)

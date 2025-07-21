@@ -7,7 +7,7 @@ if __name__ == '__main__':
     manager = ASRSManager(config_path='./config.yaml')
 
     # ===============================================================
-    # Phase 1: Online Operation
+    # Function 1: Online Operation
     # ===============================================================
     item_list = []
     df = pd.read_csv("./items.csv")
@@ -22,7 +22,7 @@ if __name__ == '__main__':
             print(f"failed to place item {item.id} online.")
 
     # ===============================================================
-    # Phase 2: Offline Reorganization
+    # Function 2: Offline Reorganization
     # ===============================================================
     
     reorg_result = manager.reorganize_offline()
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print(f"reorganization failed.")
 
     # ===============================================================
-    # Phase 3: Retrieve Items
+    # Function 3: Retrieve Items
     # ===============================================================
     retrieved_item_id = 10
     retrieved_item = manager.retrieve_item(retrieved_item_id)  # return an item object or None if not found
@@ -41,3 +41,11 @@ if __name__ == '__main__':
         print(f"Retrieved item {retrieved_item.id} placed at bin {retrieved_item.placed_bin} at position {retrieved_item.position}.")
     else: 
         print(f"Item {retrieved_item_id} not found.")
+
+    # ===============================================================
+    # Function 4: Visualize Bins
+    # ===============================================================
+    bin_id_to_visualize = 2
+    manager.visualize_bins(bin_id=bin_id_to_visualize)
+    # You can also save the visualization to a file by passing a save_path argument
+    # manager.visualize_bins(bin_id=bin_id_to_visualize, save_path="./bin_visualization.png")
