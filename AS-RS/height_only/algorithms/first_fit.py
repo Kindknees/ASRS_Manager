@@ -4,6 +4,7 @@ import utils
 def first_fit(item_to_place, all_bins, online_priority:list, bin_dimensions):
     """
     Implements the First Fit algorithm for placing an item into bins.
+    
     :param item_to_place: Item object to be placed.
     :param all_bins: A dictionary of Bin objects {id: Bin}.
     :param online_priority: A list of bin IDs representing the order in which to try placing the item.

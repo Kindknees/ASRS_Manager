@@ -9,7 +9,8 @@ class ASRSManager:
     """
     ASRSManager handles the operations of the Automated Storage and Retrieval System (ASRS).
     It manages the placement of items online and the reorganization of items offline.
-    config_path: Path to the configuration file containing bin dimensions and priorities (.yaml file).
+
+    :param config_path: Path to the configuration file containing bin dimensions and priorities (.yaml file).
     The configuration file should have the following structure:
     
     .. code-block:: yaml
@@ -47,6 +48,7 @@ class ASRSManager:
     def place_item_online(self, item: Item):
         """
         Online operation to place an item into the ASRS system.
+
         :param item: Item object to be placed.
         :return: Boolean indicating whether the item was successfully placed.
         """
@@ -65,6 +67,7 @@ class ASRSManager:
         Offline operation to reorganize items in the ASRS system.
         This method collects all items from the bins, clears the bins,
         and then applies the Best Fit algorithm to reorganize them.
+
         :return: Boolean indicating whether the reorganization was successful.
         """
 
@@ -94,6 +97,7 @@ class ASRSManager:
     def retrieve_item(self, item_id:int):
         """
         Retrieve an item from the ASRS system.
+
         :param item_id: ID of the item to be retrieved.
         :return: Item object if found, None otherwise.
         """

@@ -52,7 +52,7 @@ best fit:先將貨物清單根據高度進行排序，從最高的貨物依序�
     - offline_priority: 設定離線重組時，使用的儲位 ID 順序 。
 
 2. 產生隨機貨物資料，或使給予指定格式之貨物資料csv檔案：
-若要隨機產生貨物資料，執行以下檔案：
+若要隨機產生貨物資料，可以至random_item.py下方config的部分修改參數，並執行檔案以創造出items.csv：
 ``` bash
 # 產生隨機貨物清單
 python ramdom_item.py

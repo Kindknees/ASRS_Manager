@@ -3,6 +3,7 @@ from bin import Bin
 from item import Item
 import utils
 
+# 應該更正成找剩餘空間最少的，然後放進去那個櫃子？
 def best_fit(items:list, all_bins, bin_dimensions, offline_priority=None):
     """
     Applies the offline Best Fit algorithm to pack 3D items into bins.
@@ -18,7 +19,7 @@ def best_fit(items:list, all_bins, bin_dimensions, offline_priority=None):
     :return: list of unplaced Item objects).
     """
     unplaced_items = []
-
+    _, bin_height, _, _ = bin_dimensions
     # rotate items to height-minimized orientation
     for item in items:
         optimal_orientation = utils.get_optimal_dimension(item, bin_dimensions)
@@ -37,17 +38,18 @@ def best_fit(items:list, all_bins, bin_dimensions, offline_priority=None):
         best_bin_id = None
         best_position = None
         # scoring: # find the bin that results in the lowest new total height
-        min_resulting_height = float('inf')
+        min_remaining_height = float('inf')
 
         for bin_id in offline_priority:
             bin = all_bins[bin_id]
             position = (0, bin.get_current_height(), 0)
             if bin.can_place(item, position):
                 adjusted_item_height = utils.get_adjusted_height(item.placed_dimensions[1], bin.min_adjust_length)
-                resulting_height = position[1] + adjusted_item_height
+                remaining_height = bin_height - position[1] - adjusted_item_height
+# 這邊好像怪怪的
 
-                if resulting_height < min_resulting_height:
-                    min_resulting_height = resulting_height
+                if (remaining_height < min_remaining_height) and (remaining_height >= 0):
+                    min_remaining_height = remaining_height
                     best_position = position
                     item.placed_bin = bin.id
                     best_bin_id = bin_id

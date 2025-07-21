@@ -50,4 +50,5 @@ class Bin:
 
     def place_item(self, item, position):
         item.position = position
+        item.placed_bin = self.id
         self.items.append(item)
