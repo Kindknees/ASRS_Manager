@@ -13,7 +13,7 @@ def first_fit(item_to_place, all_bins, online_priority:list, bin_dimensions):
     """
     bin_width, bin_height, bin_depth, bin_min_adjust_length = bin_dimensions
     item_dimension = utils.get_optimal_dimension(item_to_place, bin_dimensions)
-
+    
     if item_dimension is None:
         print (f"Item {item_to_place.id} cannot be placed due to dimension constraints.")
         item_to_place.placed_bin = None
@@ -23,6 +23,9 @@ def first_fit(item_to_place, all_bins, online_priority:list, bin_dimensions):
 
     for bin_id in online_priority:
         bin = all_bins[bin_id]
+        if bin.weight_limit != None:
+            if bin.weight_limit < item_to_place.weight:
+                continue
         
         current_stacked_height = bin.get_current_height()
         w, h, d = item_dimension
@@ -38,4 +41,5 @@ def first_fit(item_to_place, all_bins, online_priority:list, bin_dimensions):
     item_to_place.placed_bin = None
     item_to_place.position = None
     item_to_place.placed_dimensions = None
+    print (f"Cannot place item {item_to_place.id} into bins due to weight constraints or the bins are full.")
     return None

@@ -2,8 +2,9 @@ online_priority: [5, 4, 6, 3, 7, 2, 8, 1, 9]
 
 offline_priority: [1, 9, 2, 8, 3, 7, 4, 6, 5]
 
-bin_dimensions:
+bin_config:
   width: 70
   height: 100
   depth: 70
   min_adjust_length: 5
+  weight_limit: 17

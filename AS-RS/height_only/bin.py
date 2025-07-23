@@ -1,10 +1,11 @@
 import utils
 
 class Bin:
-    def __init__(self, width, height, depth, min_adjust_length, id):
+    def __init__(self, width, height, depth, min_adjust_length, id, weight_limit=None):
         self.width = width
         self.height = height
         self.depth = depth
+        self.weight_limit = weight_limit
         self.min_adjust_length = min_adjust_length
         self.id = id
         self.items = []

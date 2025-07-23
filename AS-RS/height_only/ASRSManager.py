@@ -37,14 +37,25 @@ class ASRSManager:
 
         self.online_priority = config['online_priority']
         self.offline_priority = config['offline_priority']
-        b_dims = config['bin_dimensions']
-        self.bin_dimensions = (b_dims['width'], b_dims['height'], b_dims['depth'], b_dims['min_adjust_length'])
+        bin_config = config['bin_config']
+        self.bin_dimensions = (bin_config['width'], bin_config['height'], bin_config['depth'], bin_config['min_adjust_length'])
         
         num_all_bins = len(self.online_priority)
 
+        try:
+            weight_limit = bin_config['weight_limit']
+        except:
+            print ("no weight limit is set")
+
         self.bins = {}
         for i in range(1, num_all_bins + 1):
-            self.bins[i] = Bin(id=i, width=b_dims['width'], height=b_dims['height'], depth=b_dims['depth'], min_adjust_length=b_dims['min_adjust_length'])
+            self.bins[i] = Bin(id=i,
+                               width=bin_config['width'], 
+                               height=bin_config['height'], 
+                               depth=bin_config['depth'], 
+                               min_adjust_length=bin_config['min_adjust_length'], 
+                               weight_limit=weight_limit
+                               )
 
     def place_item_online(self, item: Item) -> bool:
         """
