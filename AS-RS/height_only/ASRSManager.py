@@ -4,6 +4,7 @@ from item import Item
 from algorithms.first_fit import first_fit
 from algorithms.best_fit import best_fit
 from visualization import visualization
+import utils
 
 class ASRSManager:
     """
@@ -45,7 +46,7 @@ class ASRSManager:
         for i in range(1, num_all_bins + 1):
             self.bins[i] = Bin(id=i, width=b_dims['width'], height=b_dims['height'], depth=b_dims['depth'], min_adjust_length=b_dims['min_adjust_length'])
 
-    def place_item_online(self, item: Item):
+    def place_item_online(self, item: Item) -> bool:
         """
         Online operation to place an item into the ASRS system.
 
@@ -62,7 +63,7 @@ class ASRSManager:
         else:
             return False
 
-    def reorganize_offline(self):
+    def reorganize_offline(self) -> bool:
         """
         Offline operation to reorganize items in the ASRS system.
         This method collects all items from the bins, clears the bins,
@@ -90,11 +91,12 @@ class ASRSManager:
                                    offline_priority=self.offline_priority)
 
         if unplaced_items:
-            return True
-        else:
+            print (unplaced_items)
             return False
+        else:
+            return True
     
-    def retrieve_item(self, item_id:int):
+    def retrieve_item(self, item_id:int) -> Item:
         """
         Retrieve an item from the ASRS system.
 
@@ -113,3 +115,39 @@ class ASRSManager:
         This method prints the IDs of items in each bin.
         """
         visualization.plot_bin(self.bins, bin_id, save_path=save_path)
+
+    def remove_item(self, item_id:int) -> tuple[bool, list]:
+        """
+        Remove an item from the ASRS system.
+
+        :param item_id: ID of the item to be removed.
+        :return: Boolean indicating whether the item was successfully removed, moved_items:list
+        """
+        for bin_obj in self.bins.values():
+            item_to_remove_index = -1
+            for i, item in enumerate(bin_obj.items):
+                if item.id == item_id:
+                    item_to_remove_index = i
+                    break
+            
+            if item_to_remove_index != -1:
+                removed_item = bin_obj.items[item_to_remove_index]
+                
+                adjusted_height_to_remove = utils.get_adjusted_height(
+                    removed_item.placed_dimensions[1], 
+                    bin_obj.min_adjust_length
+                )
+
+                bin_obj.items.pop(item_to_remove_index)
+                
+                # move down the items above item_to_move
+                moved_items = []
+                for i in range(item_to_remove_index, len(bin_obj.items)):
+                    later_item = bin_obj.items[i]
+                    x, y, z = later_item.position
+                    later_item.position = (x, y - adjusted_height_to_remove, z)
+                    moved_items.append(later_item)
+                    
+                return True, moved_items
+
+        return False, None

@@ -46,6 +46,24 @@ if __name__ == '__main__':
     # Function 4: Visualize Bins
     # ===============================================================
     bin_id_to_visualize = 2
-    manager.visualize_bins(bin_id=bin_id_to_visualize)
+    # manager.visualize_bins(bin_id=bin_id_to_visualize)
     # You can also save the visualization to a file by passing a save_path argument
     # manager.visualize_bins(bin_id=bin_id_to_visualize, save_path="./bin_visualization.png")
+
+    # ===============================================================
+    # Function 5: Remove Item
+    # ===============================================================
+    item_to_remove_id = 10
+    # check the bin first
+    retrieved_item = manager.retrieve_item(item_to_remove_id)
+    placed_bin = retrieved_item.placed_bin
+    print ("=== before removing ===")
+    for i in manager.bins[placed_bin].items:
+        print (f"Item {i.id} placed in bin {placed_bin} at position {i.position}")
+    manager.visualize_bins(bin_id=placed_bin)
+    # then try to remove it
+    _, moved_items = manager.remove_item(item_to_remove_id)
+    print ("=== after removing ===")
+    for i in manager.bins[placed_bin].items:
+        print (f"Item {i.id} placed in bin {placed_bin} at position {i.position}")
+    manager.visualize_bins(bin_id=placed_bin)
