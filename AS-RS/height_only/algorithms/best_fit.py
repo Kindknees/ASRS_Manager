@@ -46,7 +46,6 @@ def best_fit(items:list, all_bins, bin_dimensions, offline_priority=None):
             if bin.can_place(item, position):
                 adjusted_item_height = utils.get_adjusted_height(item.placed_dimensions[1], bin.min_adjust_length)
                 remaining_height = bin_height - position[1] - adjusted_item_height
-# 這邊好像怪怪的
 
                 if (remaining_height < min_remaining_height) and (remaining_height >= 0):
                     min_remaining_height = remaining_height
