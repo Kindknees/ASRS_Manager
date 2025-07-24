@@ -8,10 +8,10 @@ def generate_random_item(num_items, min_width, max_width, min_height, max_height
     items_data.append(['width', 'height', 'depth', 'weight', 'can_rotate', 'id'])
 
     for i in range(1, num_items + 1):
-        width = random.randint(min_width, max_width)
-        height = random.randint(min_height, max_height)
-        depth = random.randint(min_depth, max_depth)
-        weight = random.randint(min_weight, max_weight)
+        width = random.uniform(min_width, max_width)
+        height = random.uniform(min_height, max_height)
+        depth = random.uniform(min_depth, max_depth)
+        weight = random.uniform(min_weight, max_weight)
         if can_rotate == 1:
             rotation = 1
         elif can_rotate == 0:
@@ -32,13 +32,13 @@ if __name__ == "__main__":
     config = {
         "num_items":30,
         "min_width":30, 
-        "max_width":65, 
+        "max_width":45, 
         "min_height":20, 
-        "max_height":50, 
+        "max_height":45, 
         "min_depth":30, 
-        "max_depth":65,
-        "min_weight":1,
-        "max_weight":20,
+        "max_depth":45,
+        "min_weight":0.1,
+        "max_weight":5,
         "can_rotate":0
     }
     generate_random_item(**config)

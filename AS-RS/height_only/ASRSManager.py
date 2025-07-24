@@ -3,7 +3,7 @@ from bin import Bin
 from item import Item
 from algorithms.first_fit import first_fit
 from algorithms.best_fit import best_fit
-from visualization import visualization
+from visualization import visualize_bin
 import utils
 
 class ASRSManager:
@@ -107,7 +107,7 @@ class ASRSManager:
         else:
             return True
     
-    def retrieve_item(self, item_id:int) -> Item:
+    def retrieve_item(self, item_id:str) -> Item:
         """
         Retrieve an item from the ASRS system.
 
@@ -120,19 +120,19 @@ class ASRSManager:
                     return item
         return None
     
-    def visualize_bins(self, bin_id:int, save_path=None):
+    def visualize_bins(self, bin_id:str, save_path=None):
         """
-        Visualize the current state of the bins in the ASRS system.
+        Visualize the current state of one bin in the ASRS system.
         This method prints the IDs of items in each bin.
         """
-        visualization.plot_bin(self.bins, bin_id, save_path=save_path)
+        visualize_bin.plot_bin(self.bins, bin_id, save_path=save_path)
 
-    def remove_item(self, item_id:int) -> tuple[bool, list]:
+    def remove_item(self, item_id:str) -> tuple[bool, list]:
         """
         Remove an item from the ASRS system.
 
         :param item_id: ID of the item to be removed.
-        :return: Boolean indicating whether the item was successfully removed, moved_items:list
+        :return: Boolean indicating whether the item was successfully removed, moved_items: a list containing item objects that were moved down.
         """
         for bin_obj in self.bins.values():
             item_to_remove_index = -1
