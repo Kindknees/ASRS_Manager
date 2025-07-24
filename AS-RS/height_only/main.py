@@ -3,14 +3,41 @@ from item import Item
 from ASRSManager import ASRSManager
 import copy
 from visualization.animation import create_animation
+import yaml
 
 if __name__ == '__main__':
+    # ===============================================================
+    # Initialization
+    # ===============================================================
+    # You can either provide a config file or specify the parameters directly.
+    # If you provide a config file, it should be in YAML format with the required structure.
+    # If you do not provide a config file, you must specify online_priority, offline_priority,
+    # bin_dimensions, and weight_limit directly.
+    # Here we use provide parameters directly for demonstration.
+    config = yaml.safe_load(open('./config.yaml', 'r'))
+    online_priority = config['online_priority']
+    offline_priority = config['offline_priority']
+    bin_width = config['bin_config']['width']
+    bin_height = config['bin_config']['height']
+    bin_depth = config['bin_config']['depth']
+    bin_min_adjust_length = config['bin_config']['min_adjust_length']
+    bin_dimensions = (bin_width, bin_height, bin_depth, bin_min_adjust_length)
+    weight_limit = config.get('weight_limit', None)
 
-    manager = ASRSManager(config_path='./config.yaml')
+    manager = ASRSManager(online_priority=online_priority,
+                           offline_priority=offline_priority,
+                           bin_dimensions=bin_dimensions,
+                           weight_limit=weight_limit)
+
+    # Or, you can just set up the manager with a config file path:
+    # manager = ASRSManager(
+    #     config_path='./config.yaml'
+    # )
 
     # ===============================================================
     # Function 1: Online Operation
     # ===============================================================
+    # Here, we read items from a CSV file and place them online to simulate the ASRS system.
     item_list = []
     df = pd.read_csv("./items.csv")
     for row in df.itertuples(index=False):
@@ -43,7 +70,7 @@ if __name__ == '__main__':
     # Function 3: Retrieve Items
     # ===============================================================
     retrieved_item_id = 10
-    retrieved_item = manager.retrieve_item(retrieved_item_id)  # return an item object or None if not found
+    retrieved_item = manager.retrieve_item(retrieved_item_id)  # return an Item object or None if not found
     if retrieved_item:
         print(f"Retrieved item {retrieved_item.id} placed at bin {retrieved_item.placed_bin} at position {retrieved_item.position}.")
     else: 

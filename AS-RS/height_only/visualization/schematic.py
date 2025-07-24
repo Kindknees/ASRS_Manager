@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 def plot_cuboid_with_cuts(x_range, y_range, z_range, num_yz_cuts=3, num_xz_cuts=2):
     """
@@ -49,16 +50,16 @@ def plot_cuboid_with_cuts(x_range, y_range, z_range, num_yz_cuts=3, num_xz_cuts=
             ax.plot([x_cut, x_cut], [y_max, y_max], [z_min, z_max], color='r', linestyle='--')
 
     # 繪製 XZ 平面切割線
-    if num_xz_cuts > 0:
-        cut_y_values = np.linspace(y_min, y_max, num_xz_cuts + 2)[1:-1]
-        for y_cut in cut_y_values:
-            ax.plot([x_min, x_max], [y_cut, y_cut], [z_min, z_min], color='g', linestyle='--')
-            ax.plot([x_min, x_max], [y_cut, y_cut], [z_max, z_max], color='g', linestyle='--')
-            ax.plot([x_min, x_min], [y_cut, y_cut], [z_min, z_max], color='g', linestyle='--')
-            ax.plot([x_max, x_max], [y_cut, y_cut], [z_min, z_max], color='g', linestyle='--')
+    # if num_xz_cuts > 0:
+    #     cut_y_values = np.linspace(y_min, y_max, num_xz_cuts + 2)[1:-1]
+    #     for y_cut in cut_y_values:
+    #         ax.plot([x_min, x_max], [y_cut, y_cut], [z_min, z_min], color='g', linestyle='--')
+    #         ax.plot([x_min, x_max], [y_cut, y_cut], [z_max, z_max], color='g', linestyle='--')
+    #         ax.plot([x_min, x_min], [y_cut, y_cut], [z_min, z_max], color='g', linestyle='--')
+    #         ax.plot([x_max, x_max], [y_cut, y_cut], [z_min, z_max], color='g', linestyle='--')
 
     # 設定軸標籤
-    ax.set_xlabel('X')
+    ax.set_xlabel('X', loc="right")
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
@@ -67,16 +68,28 @@ def plot_cuboid_with_cuts(x_range, y_range, z_range, num_yz_cuts=3, num_xz_cuts=
     ax.set_ylim(y_min, y_max)
     ax.set_zlim(z_min, z_max)
 
+    x_len = x_max - x_min
+    y_len = y_max - y_min
+    z_len = z_max - z_min
+
+    # 設定 box_aspect 讓軸的視覺長度與數據長度成比例
+    # 這裡我們讓最長軸的比例為 1，其他軸按比例縮放
+    max_len = max(x_len, y_len, z_len)
+    ax.set_box_aspect([x_len / max_len, y_len / max_len, z_len / max_len])
+    # ax.set_box_aspect([x_len / min_len, y_len / min_len, z_len / min_len])
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=4))
+    ax.zaxis.set_major_locator(MaxNLocator(nbins=5))
+
     plt.show()
 
 # 範例使用：
 # 定義長方體的範圍
-x_min, x_max = 0, 5
-y_min, y_max = 0, 3
-z_min, z_max = 0, 4
+x_min, x_max = 0, 450
+y_min, y_max = 0, 50
+z_min, z_max = 0, 200
 
 # 繪製長方體並切割成 2 個 YZ 平面和 2 個 XZ 平面
-plot_cuboid_with_cuts((x_min, x_max), (y_min, y_max), (z_min, z_max), num_yz_cuts=2, num_xz_cuts=2)
+plot_cuboid_with_cuts((x_min, x_max), (y_min, y_max), (z_min, z_max), num_yz_cuts=8, num_xz_cuts=0)
 
 # 如果你不想顯示任何切割線，可以設定 num_yz_cuts=0 和 num_xz_cuts=0
 # plot_cuboid_with_cuts((x_min, x_max), (y_min, y_max), (z_min, z_max), num_yz_cuts=0, num_xz_cuts=0)

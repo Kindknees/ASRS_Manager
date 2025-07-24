@@ -31,16 +31,28 @@ class ASRSManager:
         # This is a list of integers representing bin IDs in the order they should be tried.
         offline_priority: [19, 1, 18, 2, 17, 3, 16, 4, 15, 5, 14, 6, 13, 7, 12, 8, 11, 9, 10]
     """
-    def __init__(self, config_path):
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
+    def __init__(self, online_priority=None, offline_priority=None, bin_dimensions=None, weight_limit=None, config_path=None):
+        if config_path:
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
 
-        self.online_priority = config['online_priority']
-        self.offline_priority = config['offline_priority']
-        bin_config = config['bin_config']
-        self.bin_dimensions = (bin_config['width'], bin_config['height'], bin_config['depth'], bin_config['min_adjust_length'])
-        
-        num_all_bins = len(self.online_priority)
+            self.online_priority = config['online_priority']
+            self.offline_priority = config['offline_priority']
+            bin_config = config['bin_config']
+            self.bin_dimensions = (bin_config['width'], bin_config['height'], bin_config['depth'], bin_config['min_adjust_length'])
+
+            try:
+                weight_limit = bin_config['weight_limit']
+                self.weight_limit = weight_limit
+            except:
+                print ("no weight limit is set")
+        else:
+            self.online_priority = online_priority
+            self.offline_priority = offline_priority
+            self.bin_dimensions = bin_dimensions
+            self.weight_limit = weight_limit if weight_limit is not None else None
+            if not self.online_priority or not self.offline_priority or not self.bin_dimensions:
+                raise ValueError("If config_path is not provided, online_priority, offline_priority, and bin_dimensions must be specified.")
 
         try:
             weight_limit = bin_config['weight_limit']
@@ -48,13 +60,13 @@ class ASRSManager:
             print ("no weight limit is set")
 
         self.bins = {}
-        for i in range(1, num_all_bins + 1):
+        for i in range(1, len(self.online_priority) + 1):
             self.bins[i] = Bin(id=i,
-                               width=bin_config['width'], 
-                               height=bin_config['height'], 
-                               depth=bin_config['depth'], 
-                               min_adjust_length=bin_config['min_adjust_length'], 
-                               weight_limit=weight_limit
+                               width=self.bin_dimensions[0], 
+                               height=self.bin_dimensions[1], 
+                               depth=self.bin_dimensions[2], 
+                               min_adjust_length=self.bin_dimensions[3], 
+                               weight_limit=self.weight_limit
                                )
 
     def place_item_online(self, item: Item) -> bool:
@@ -129,7 +141,7 @@ class ASRSManager:
 
     def remove_item(self, item_id:str) -> tuple[bool, list]:
         """
-        Remove an item from the ASRS system.
+        Remove an item from the ASRS system. Besides removing the item, it also moves down the items above it in the bin.
 
         :param item_id: ID of the item to be removed.
         :return: Boolean indicating whether the item was successfully removed, moved_items: a list containing item objects that were moved down.
