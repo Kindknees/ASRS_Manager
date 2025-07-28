@@ -38,28 +38,174 @@
             └── visualization.py  
 ```
 
-## 主要演算法:
-若貨物能翻轉：將貨物翻轉至高度較低的情況。
-若貨物無法翻轉：照貨物原樣放入櫃子
+## API 使用範例
 
-first fit:遍歷所有已放入貨物的櫃子，若有空間可以放入這個貨物就放入，若沒有的話就開一個新的櫃子。
-best fit:先將貨物清單根據高度進行排序，從最高的貨物依序放入。遍歷所有已放入貨物的櫃子，並給予每個櫃子一個分數。分數的給法是：若櫃子放入這個貨物的話，剩餘的高度越少，分數越高，最後會把貨物放入分數最高的櫃子裡面。
+所有主要功能都封裝在 `ASRSManager` 類別中。以下將透過 `main.py` 的程式碼，說明如何使用各個 API。
 
-## 執行：
-1. 參數設定(config.yaml)：
-    - bin_dimensions: 設定儲位的物理尺寸（寬、高、深）以及可調整的最小高度單位 。
-    - online_priority: 設定線上作業時，系統嘗試放置貨物的儲位 ID 順序 。
-    - offline_priority: 設定離線重組時，使用的儲位 ID 順序 。
+### 1. 初始化 ASRSManager
 
-2. 產生隨機貨物資料，或使給予指定格式之貨物資料csv檔案：
-若要隨機產生貨物資料，可以至random_item.py下方config的部分修改參數，並執行檔案以創造出items.csv：
-``` bash
-# 產生隨機貨物清單
-python ramdom_item.py
+您可以透過 `config.yaml` 設定檔或直接傳遞參數來初始化 `ASRSManager`。
+
+**方法一：使用 `config.yaml`**
+`config.yaml` 檔案內容如下，您可以設定儲位大小、權重限制，以及線上和離線操作的儲位優先順序。
+
+```yaml
+online_priority: [5, 4, 6, 3, 7, 2, 8, 1, 9]
+
+offline_priority: [1, 9, 2, 8, 3, 7, 4, 6, 5]
+
+bin_config:
+  width: 50
+  height: 230
+  depth: 50
+  min_adjust_length: 5
+  weight_limit: 17
 ```
 
-3. 執行主程式：
-``` bash
-# 各種使用範例皆在main.py中可參考
-python main.py
+然後在程式碼中這樣初始化：
+
+```python
+from ASRSManager import ASRSManager
+
+# 只需要提供設定檔路徑
+manager = ASRSManager(config_path='./config.yaml')
 ```
+
+**方法二：直接傳遞參數**
+您也可以直接在程式碼中定義參數並初始化。
+
+```python
+import yaml
+from ASRSManager import ASRSManager
+
+# 讀取設定檔來取得參數
+online_priority = [5, 4, 6, 3, 7, 2, 8, 1, 9]
+offline_priority = [1, 9, 2, 8, 3, 7, 4, 6, 5]
+bin_config = config['bin_config']
+bin_dimensions = (50, 230, 50, 5)   # width, height, depth, min_adjust_length
+weight_limit = 17
+
+# 將參數傳入 manager
+manager = ASRSManager(online_priority=online_priority,
+                       offline_priority=offline_priority,
+                       bin_dimensions=bin_dimensions,
+                       weight_limit=weight_limit)
+```
+
+### 2. 線上操作 (放置物品)
+
+`place_item_online` 方法會使用 First Fit 演算法，為新進物品尋找存放位置。
+
+```python
+import pandas as pd
+from item import Item
+import copy
+
+# 從 CSV 讀取物品清單
+item_list = []
+df = pd.read_csv("./items.csv")
+for row in df.itertuples(index=False):
+    item_list.append(Item(row.width, row.height, row.depth, row.can_rotate, row.weight, row.id))
+
+# 依序將物品放入
+for item in item_list:
+    result = manager.place_item_online(item)    # 回傳一個bool，表示是否放置成功
+    if not result:
+        print(f"failed to place item {item.id} online.")
+```
+
+### 3. 離線重組
+
+當系統處於離峰時段，`reorganize_offline` 方法會使用 Best Fit 演算法，將所有物品重新整理，以達到最佳的空間利用率。
+
+```python
+reorg_result = manager.reorganize_offline() # 回傳一個bool，表示是否放置成功
+
+if reorg_result:
+    print(f"reorganization successful!")
+else:
+    print(f"reorganization failed.")
+```
+
+### 4. 檢索物品
+
+`retrieve_item` 方法可以根據物品 ID，從系統中找到並回傳該物品的物件。
+
+```python
+retrieved_item_id = 10
+retrieved_item = manager.retrieve_item(retrieved_item_id)  # 回傳一個 Item 物件或 None
+
+if retrieved_item:
+    print(f"Retrieved item {retrieved_item.id} placed at bin {retrieved_item.placed_bin} at position {retrieved_item.position}.")
+else: 
+    print(f"Item {retrieved_item_id} not found.")
+```
+
+### 5. 移除物品
+
+`remove_item` 方法不僅會移除指定的物品，還會將該物品上方的所有物品向下移動，填補空缺。
+
+```python
+item_to_remove_id = 10
+
+# 執行移除操作
+_, moved_items = manager.remove_item(item_to_remove_id) # 回傳：是否成功, 被移動的所有物品列表
+
+# 檢查移除後的結果
+print ("=== after removing ===")
+# ... (檢查 bin 內物品位置的程式碼)
+```
+
+### 6. 視覺化儲位
+
+`visualize_bins` 方法可以將指定的儲位內部情況繪製成 3D 圖，方便觀察。
+
+```python
+bin_id_to_visualize = 2
+# 直接顯示圖表
+manager.visualize_bins(bin_id=bin_id_to_visualize)
+
+# 或是將圖表儲存成檔案
+manager.visualize_bins(bin_id=bin_id_to_visualize, save_path="./bin_visualization.png")
+```
+
+### 7. 產生線上放入物品時的 GIF 動畫
+
+您可以記錄線上入庫的每一步，並使用 `create_animation` 函式生成 GIF 動畫。
+
+```python
+from visualization.animation import create_animation
+# online_history 是一個記錄每一步 manager.bins 狀態的 list
+# placed_sequence 是一個記錄每一步放置了哪個 item 的 list
+
+create_animation(
+    history=online_history,
+    placed_item_sequence=placed_sequence,
+    manager=manager,
+    output_filename="online.gif"
+)
+```
+
+## 如何執行
+
+1.  **參數設定 (`config.yaml`)**：
+
+      - `bin_dimensions`: 設定儲位的物理尺寸（寬、高、深）以及可調整的最小高度單位。
+      - `online_priority`: 設定線上作業時，系統嘗試放置貨物的儲位 ID 順序。
+      - `offline_priority`: 設定離線重組時，使用的儲位 ID 順序。
+
+2.  **準備貨物資料 (`items.csv`)**：
+    您可以手動建立 `items.csv`，或執行 `random_item.py` 來生成隨機的貨物資料。
+
+    ```bash
+    # 產生隨機貨物清單
+    python random_item.py
+    ```
+
+3.  **執行主程式**：
+    `main.py` 中包含了上述所有功能的使用範例，您可以直接執行或參考其寫法來開發您的應用。
+
+    ```bash
+    # 各種使用範例皆在 main.py 中可參考
+    python main.py
+    ```

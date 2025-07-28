@@ -43,7 +43,7 @@ if __name__ == '__main__':
     for row in df.itertuples(index=False):
         item_list.append(Item(row.width, row.height, row.depth, row.can_rotate, row.weight, row.id))
 
-    online_history = [copy.deepcopy(manager.bins)]
+    online_history = [copy.deepcopy(manager.bins)]  # to create an animation later
     placed_sequence = [None]
     # start to place items online
     for item in item_list:
