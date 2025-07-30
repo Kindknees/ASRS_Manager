@@ -18,6 +18,11 @@
 
 ![3D_visualization](./bin_visualization.png)
 
+## 結果呈現
+
+在online放入物品的狀況中，以動畫呈現如下：
+![online_animation](./online.gif)
+
 ## 專案結構
 ```
 .  
@@ -196,16 +201,24 @@ create_animation(
 
 2.  **準備貨物資料 (`items.csv`)**：
     您可以手動建立 `items.csv`，或執行 `random_item.py` 來生成隨機的貨物資料。
-
+    windows:
     ```bash
-    # 產生隨機貨物清單
     python random_item.py
     ```
 
+    mac:
+    ```bash
+    python3 random_item.py
+    ```
 3.  **執行主程式**：
     `main.py` 中包含了上述所有功能的使用範例，您可以直接執行或參考其寫法來開發您的應用。
+    windows:
 
     ```bash
     # 各種使用範例皆在 main.py 中可參考
     python main.py
+    ```
+    mac:
+    ```bash
+    python3 main.py
     ```
