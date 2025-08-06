@@ -14,25 +14,26 @@ if __name__ == '__main__':
     # If you do not provide a config file, you must specify online_priority, offline_priority,
     # bin_dimensions, and weight_limit directly.
     # Here we use provide parameters directly for demonstration.
-    config = yaml.safe_load(open('./config.yaml', 'r'))
-    online_priority = config['online_priority']
-    offline_priority = config['offline_priority']
-    bin_width = config['bin_config']['width']
-    bin_height = config['bin_config']['height']
-    bin_depth = config['bin_config']['depth']
-    bin_min_adjust_length = config['bin_config']['min_adjust_length']
-    bin_dimensions = (bin_width, bin_height, bin_depth, bin_min_adjust_length)
-    weight_limit = config.get('weight_limit', None)
+    
+    # config = yaml.safe_load(open('./config.yaml', 'r'))
+    # online_priority = config['online_priority']
+    # offline_priority = config['offline_priority']
+    # bin_width = config['bin_config']['width']
+    # bin_height = config['bin_config']['height']
+    # bin_depth = config['bin_config']['depth']
+    # bin_min_adjust_length = config['bin_config']['min_adjust_length']
+    # bin_dimensions = (bin_width, bin_height, bin_depth, bin_min_adjust_length)
+    # weight_limit = config.get('weight_limit', None)
 
-    manager = ASRSManager(online_priority=online_priority,
-                           offline_priority=offline_priority,
-                           bin_dimensions=bin_dimensions,
-                           weight_limit=weight_limit)
+    # manager = ASRSManager(online_priority=online_priority,
+    #                        offline_priority=offline_priority,
+    #                        bin_dimensions=bin_dimensions,
+    #                        weight_limit=weight_limit)
 
     # Or, you can just set up the manager with a config file path:
-    # manager = ASRSManager(
-    #     config_path='./config.yaml'
-    # )
+    manager = ASRSManager(
+        config_path='./config.yaml'
+    )
 
     # ===============================================================
     # Function 1: Online Operation
@@ -41,18 +42,20 @@ if __name__ == '__main__':
     item_list = []
     df = pd.read_csv("./items.csv")
     for row in df.itertuples(index=False):
-        item_list.append(Item(row.width, row.height, row.depth, row.can_rotate, row.weight, row.id))
+        item_list.append(Item(row.width, row.height, row.depth, row.can_rotate, row.weight, row.id, False))
 
     online_history = [copy.deepcopy(manager.bins)]  # to create an animation later
     placed_sequence = [None]
+    plan_history = [] 
     # start to place items online
     for item in item_list:
         result = manager.place_item_online(item)
-        if result:
+        if result is not None:
             online_history.append(copy.deepcopy(manager.bins))
             placed_sequence.append(copy.deepcopy(item))
-        
-        if not result:
+            plan_history.append(result)
+            print ("Successfully placed item:", item.id)
+        else:
             print(f"failed to place item {item.id} online.")
 
     # ===============================================================
@@ -94,14 +97,14 @@ if __name__ == '__main__':
     retrieved_item = manager.retrieve_item(item_to_remove_id)
     placed_bin = retrieved_item.placed_bin
     print ("=== before removing ===")
-    for i in manager.bins[placed_bin].items:
+    for i in manager.bins[placed_bin].items.values():
         print (f"Item {i.id} placed in bin {placed_bin} at position {i.position}")
     # manager.visualize_bins(bin_id=placed_bin)
 
     # then try to remove it and check
-    _, moved_items = manager.remove_item(item_to_remove_id)
+    status = manager.remove_item(item_to_remove_id)
     print ("=== after removing ===")
-    for i in manager.bins[placed_bin].items:
+    for i in manager.bins[placed_bin].items.values():
         print (f"Item {i.id} placed in bin {placed_bin} at position {i.position}")
     # manager.visualize_bins(bin_id=placed_bin)
 
@@ -113,5 +116,6 @@ if __name__ == '__main__':
         history=online_history,
         placed_item_sequence=placed_sequence,
         manager=manager,
+        plan_history=plan_history,
         output_filename="online.gif"
     )

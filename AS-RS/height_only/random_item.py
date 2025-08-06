@@ -30,7 +30,7 @@ def generate_random_item(num_items, min_width, max_width, min_height, max_height
 
 if __name__ == "__main__":
     config = {
-        "num_items":65,
+        "num_items":40,
         "min_width":30, 
         "max_width":45, 
         "min_height":20, 

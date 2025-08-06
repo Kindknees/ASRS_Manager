@@ -17,7 +17,7 @@ def plot_bin(bins, bin_id, save_path=None):
 
     colors = plt.cm.rainbow(np.linspace(0, 1, len(bin.items)))
 
-    for item, color in zip(bin.items, colors):
+    for item, color in zip(bin.items.values(), colors):
         x, y, z = item.position
         dx, dy, dz = item.placed_dimensions
 

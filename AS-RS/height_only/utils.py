@@ -1,12 +1,13 @@
 import math
 import itertools
+from item import Item
 
 def get_adjusted_height(item_height_value, min_adjust_length):
     if min_adjust_length <= 0:
         return item_height_value
     return math.ceil(item_height_value / min_adjust_length) * min_adjust_length
 
-def get_optimal_dimension(item, bin_dimensions):
+def get_optimal_dimension(item: Item, bin_dimensions):
         """
         return: best (width, height, depth) tuple. If the item does not fit the bin, return None。
         """
