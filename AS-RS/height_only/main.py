@@ -58,6 +58,14 @@ if __name__ == '__main__':
         else:
             print(f"failed to place item {item.id} online.")
 
+    create_animation(
+        history=online_history,
+        placed_item_sequence=placed_sequence,
+        manager=manager,
+        plan_history=plan_history,
+        output_filename="online.gif"
+    )
+
     # ===============================================================
     # Function 2: Offline Reorganization
     # ===============================================================
@@ -72,7 +80,7 @@ if __name__ == '__main__':
     # ===============================================================
     # Function 3: Retrieve Items
     # ===============================================================
-    retrieved_item_id = 10
+    retrieved_item_id = 1
     retrieved_item = manager.retrieve_item(retrieved_item_id)  # return an Item object or None if not found
     if retrieved_item:
         print(f"Retrieved item {retrieved_item.id} placed at bin {retrieved_item.placed_bin} at position {retrieved_item.position}.")
@@ -112,10 +120,10 @@ if __name__ == '__main__':
     # Function 6: Create Animation
     # ===============================================================   
     # Create an animation for the online placement process
-    create_animation(
-        history=online_history,
-        placed_item_sequence=placed_sequence,
-        manager=manager,
-        plan_history=plan_history,
-        output_filename="online.gif"
-    )
+    # create_animation(
+    #     history=online_history,
+    #     placed_item_sequence=placed_sequence,
+    #     manager=manager,
+    #     plan_history=plan_history,
+    #     output_filename="online.gif"
+    # )

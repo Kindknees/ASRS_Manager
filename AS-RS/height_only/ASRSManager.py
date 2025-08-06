@@ -85,7 +85,8 @@ class ASRSManager:
 
         # initialize bins
         self.bins = {}
-        for i in range(1, len(self.online_priority) + 1):
+        all_bins = set(self.online_priority + self.bins_for_pallets + self.offline_priority)
+        for i in all_bins:
             self.bins[i] = Bin(id=i,
                                width=self.bin_dimensions[0], 
                                height=self.bin_dimensions[1], 
@@ -93,7 +94,7 @@ class ASRSManager:
                                min_adjust_length=self.bin_dimensions[3], 
                                weight_limit=self.weight_limit
                                )
-
+        
         self._initialize_empty_pallets()
 
     def _initialize_empty_pallets(self):
@@ -107,22 +108,20 @@ class ASRSManager:
 
         for i in range (1, num_pallets + 1, 1):    
             item = Item(
-                    width=self.bin_dimensions[0],
+                    width=self.bin_dimensions[0]/2,
                     height=self.bin_dimensions[3],  # set as min_adjust_length
-                    depth=self.bin_dimensions[2],
+                    depth=self.bin_dimensions[2]/2,
                     rotation=False,
                     weight=None,
                     id=i,
                     empty=True
                     )
-            item.placed_dimensions = (0, self.bin_dimensions[3], 0)  # Set as min_adjust_length. This is for bin.can_place(item) to work correctly.
+            item.placed_dimensions = (self.bin_dimensions[0]/2, self.bin_dimensions[3], self.bin_dimensions[2]/2)  # Set as min_adjust_length. This is for bin.can_place(item) to work correctly.
             for bin_id in bins_for_pallets:
                 bin = self.bins[bin_id]
                 if bin.can_place(item):
-                    item.placed_dimensions = (0, self.bin_dimensions[3], 0)
                     item.position = (0, bin.get_current_height(), 0)
                     item.placed_bin = bin.id
-
                     bin.place_item(item, item.position)
                     break
             
