@@ -121,7 +121,7 @@ class ASRSManager:
                 bin = self.bins[bin_id]
                 if bin.can_place(item):
                     item.position = (0, bin.get_current_height(), 0)
-                    item.placed_bin = bin.id
+                    item.placed_bin = bin_id
                     bin.place_item(item, item.position)
                     break
             
@@ -136,9 +136,10 @@ class ASRSManager:
         :return: Boolean indicating whether the item was successfully placed.
         """
         placement_plan = self.plan_online_placement(item_to_place=item_to_place)
-        for value in placement_plan.values():
+        for key, value in placement_plan.items():
             if value is None:
-                raise ValueError(f"Placement plan for item {item_to_place.id} is incomplete. Please check the item dimensions and bin configurations.")
+                # raise ValueError(f"Placement plan for item {item_to_place.id} is incomplete. Please check the item dimensions and bin configurations.")
+                raise ValueError(f"Placement plan for item {item_to_place.id} is incomplete. Please check the item dimensions and bin configurations. Missing key: {key} with value: {value}")
             
         if placement_plan:
             placement_plan['item_object'] = item_to_place
@@ -168,7 +169,7 @@ class ASRSManager:
                                    all_bins=self.bins, 
                                    online_priority=self.online_priority, 
                                    bin_dimensions=self.bin_dimensions, 
-                                   best_pallet=best_pallet)
+                                   best_pallet=utils.ItemDictToItem(best_pallet))
         return first_fit_plan
     
     def execute_online_placement_plan(self, plan: dict, item_to_place: Item) -> bool:
@@ -252,20 +253,20 @@ class ASRSManager:
         for bin_obj in self.bins.values():
             for item in bin_obj.items.values():
                 if item.id == item_id:
-                    return item
+                    return item.to_dict()
         return None
 
-    def all_items(self) -> list[Item]:
+    def get_all_items(self) -> list[Item]:
         """
         Get all items in the ASRS system.
 
         :return: A list of Item objects representing all items in the system.
         """
-        all_items = []
+        all_items = {}
         for bin_obj in self.bins.values():
             for item in bin_obj.items:
                 if (not item.empty):
-                    all_items.append(item)
+                    all_items[f"{item.id}"] = item.to_dict()
         return all_items
     
     def visualize_bins(self, bin_id:str, save_path=None):
@@ -303,7 +304,7 @@ class ASRSManager:
                         
         return_dict = {
             'success': True if flag else False,
-            'pallet': item
+            'pallet': item.to_dict() if item else None
         }
         return return_dict
     
@@ -326,7 +327,7 @@ class ASRSManager:
                             min_distance = distance
                             closest_pallet = item
 
-        return closest_pallet
+        return closest_pallet.to_dict() if closest_pallet else None
     
     def _calculate_distance_to_entrance(self, item: Item, entrance_position=(0, 0, 0, 1)):
         """

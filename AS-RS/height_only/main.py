@@ -58,13 +58,13 @@ if __name__ == '__main__':
         else:
             print(f"failed to place item {item.id} online.")
 
-    create_animation(
-        history=online_history,
-        placed_item_sequence=placed_sequence,
-        manager=manager,
-        plan_history=plan_history,
-        output_filename="online.gif"
-    )
+    # create_animation(
+    #     history=online_history,
+    #     placed_item_sequence=placed_sequence,
+    #     manager=manager,
+    #     plan_history=plan_history,
+    #     output_filename="online.gif"
+    # )
 
     # ===============================================================
     # Function 2: Offline Reorganization
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     retrieved_item_id = 1
     retrieved_item = manager.retrieve_item(retrieved_item_id)  # return an Item object or None if not found
     if retrieved_item:
-        print(f"Retrieved item {retrieved_item.id} placed at bin {retrieved_item.placed_bin} at position {retrieved_item.position}.")
+        print(f"Retrieved item {retrieved_item['id']} placed at bin {retrieved_item['placed_bin']} at position {retrieved_item['position']}.")
     else: 
         print(f"Item {retrieved_item_id} not found.")
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # Function 4: Visualize Bins
     # ===============================================================
     bin_id_to_visualize = 2
-    # manager.visualize_bins(bin_id=bin_id_to_visualize)
+    manager.visualize_bins(bin_id=bin_id_to_visualize)
     
     # You can also save the visualization to a file by passing a save_path argument
     # manager.visualize_bins(bin_id=bin_id_to_visualize, save_path="./bin_visualization.png")
@@ -103,14 +103,18 @@ if __name__ == '__main__':
 
     # check the bin first
     retrieved_item = manager.retrieve_item(item_to_remove_id)
-    placed_bin = retrieved_item.placed_bin
+    placed_bin = retrieved_item["placed_bin"]
     print ("=== before removing ===")
     for i in manager.bins[placed_bin].items.values():
         print (f"Item {i.id} placed in bin {placed_bin} at position {i.position}")
     # manager.visualize_bins(bin_id=placed_bin)
 
     # then try to remove it and check
-    status = manager.remove_item(item_to_remove_id)
+    status = manager.remove_item(item_to_remove_id)['success']
+    if status:
+        print(f"Item {item_to_remove_id} removed successfully.")
+    else:
+        print(f"Failed to remove item {item_to_remove_id}.")
     print ("=== after removing ===")
     for i in manager.bins[placed_bin].items.values():
         print (f"Item {i.id} placed in bin {placed_bin} at position {i.position}")

@@ -40,3 +40,21 @@ def get_optimal_dimension(item: Item, bin_dimensions):
             
         valid_orientations.sort(key=lambda o: o[1])
         return valid_orientations[0]
+
+def ItemDictToItem(item_dict):
+    """
+    Convert a dictionary representation of an item to an Item object.
+    """
+    item = Item(
+        width=item_dict['width'],
+        height=item_dict['height'],
+        depth=item_dict['depth'],
+        rotation=item_dict['rotation'],
+        weight=item_dict['weight'],
+        id=item_dict['id'],
+        empty=item_dict['empty'],
+    )
+    item.position = item_dict.get('position', None)
+    item.placed_bin = item_dict.get('placed_bin', None)
+    item.placed_dimensions = item_dict.get('placed_dimensions', (item.width, item.height, item.depth))
+    return item

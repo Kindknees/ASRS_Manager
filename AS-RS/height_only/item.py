@@ -39,3 +39,17 @@ class Item:
         self.placed_bin = None
         self.placed_dimensions = (self.width, self.height, self.depth)
 
+    def to_dict(self):
+        """Converts the item object to a dictionary for JSON serialization."""
+        return {
+            "id": self.id,
+            "width": self.width,
+            "height": self.height,
+            "depth": self.depth,
+            "weight": self.weight,
+            "rotation": self.rotation,
+            "empty": self.empty,
+            "position": self.position,
+            "placed_bin": self.placed_bin,
+            "placed_dimensions": self.placed_dimensions
+        }
