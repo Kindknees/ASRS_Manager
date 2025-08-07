@@ -53,6 +53,9 @@ class Bin:
     #     return x_overlap and y_overlap and z_overlap
 
     def place_item(self, item, position):
-        item.position = position
-        item.placed_bin = self.id
-        self.items[item.id] = item
+        try:
+            item.position = position
+            item.placed_bin = self.id
+            self.items[item.id] = item
+        except Exception as e:
+            raise ValueError(f"Error placing item {item.id} in bin {self.id}: {e}")

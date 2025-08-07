@@ -340,3 +340,26 @@ class ASRSManager:
         item_position = item.position
         return self.bin_dimensions[0] * abs(int(item.placed_bin) - int(entrance_position[3])) + \
                abs(item_position[1] - entrance_position[1])
+    
+    def batch_place_items(self, items: list[Item]) -> dict:
+        """
+        Place a batch of items in the ASRS system. These items' all information (including placed bin, position, etc.) should be provided in advanced.
+        This method is for resuming the system if any accident happens.
+
+        :param items: A list of Item objects to be placed.
+        :return: A dictionary containing the placement results for each item.
+        """
+        results = {}
+        for item in items:
+            placed_bin = item.placed_bin
+            if placed_bin not in self.bins :
+                raise ValueError (f"Bin {placed_bin} not found for item {item.id}. Please check the bin configurations.")
+            if placed_bin is None:
+                raise ValueError (f"Item {item.id} does not have a placed bin. Please check the item configurations.")
+            self.bins[placed_bin].place_item(item, item.position)
+            results[item.id] = {
+                'placed_bin': placed_bin if placed_bin else None,
+                'position': item.position,
+                'placed_dimensions': item.placed_dimensions
+            }
+        return results

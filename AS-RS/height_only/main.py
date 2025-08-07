@@ -39,24 +39,41 @@ if __name__ == '__main__':
     # Function 1: Online Operation
     # ===============================================================
     # Here, we read items from a CSV file and place them online to simulate the ASRS system.
-    item_list = []
-    df = pd.read_csv("./items.csv")
-    for row in df.itertuples(index=False):
-        item_list.append(Item(row.width, row.height, row.depth, row.can_rotate, row.weight, row.id, False))
+    # item_list = []
+    # df = pd.read_csv("./items.csv")
+    # for row in df.itertuples(index=False):
+    #     item_list.append(Item(row.width, row.height, row.depth, row.can_rotate, row.weight, row.id, False))
 
-    online_history = [copy.deepcopy(manager.bins)]  # to create an animation later
-    placed_sequence = [None]
-    plan_history = [] 
-    # start to place items online
-    for item in item_list:
-        result = manager.place_item_online(item)
-        if result is not None:
-            online_history.append(copy.deepcopy(manager.bins))
-            placed_sequence.append(copy.deepcopy(item))
-            plan_history.append(result)
-            print ("Successfully placed item:", item.id)
-        else:
-            print(f"failed to place item {item.id} online.")
+    # online_history = [copy.deepcopy(manager.bins)]  # to create an animation later
+    # placed_sequence = [None]
+    # plan_history = [] 
+    # # start to place items online
+    # for item in item_list:
+    #     result = manager.place_item_online(item)
+    #     if result is not None:
+    #         online_history.append(copy.deepcopy(manager.bins))
+    #         placed_sequence.append(copy.deepcopy(item))
+    #         plan_history.append(result)
+    #         print ("Successfully placed item:", item.id)
+    #     else:
+    #         print(f"failed to place item {item.id} online.")
+
+    # ===============================================================
+    # Function 7: Batch Placement
+    # ===============================================================  
+    batch_items = [Item(id=i, width=10, height=10, depth=10, rotation=False, weight=5.0, empty=False) for i in range(1, 5, 1)]
+    for item in batch_items:
+        item.placed_bin = item.id % 5  # Assigning a bin ID for demonstration
+        item.placed_dimensions = (item.width, item.height, item.depth)  # Assuming no rotation for simplicity
+        item.position = (0, 0, 0)  # Default position for demonstration
+
+    batch_results = manager.batch_place_items(batch_items)
+    for item_id, result in batch_results.items():
+        for value in result.values():
+            if value is None:
+                print(f"Batch placement in item {item_id} could not be placed.")
+
+
 
     # create_animation(
     #     history=online_history,
@@ -131,3 +148,4 @@ if __name__ == '__main__':
     #     plan_history=plan_history,
     #     output_filename="online.gif"
     # )
+
