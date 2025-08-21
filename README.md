@@ -21,7 +21,7 @@
 ## 結果呈現
 
 在online放入物品的狀況中，以動畫呈現如下：
-![online_animation](./online.gif)
+![online_animation](./visualization/online.gif)
 
 ## 專案結構
 ```
