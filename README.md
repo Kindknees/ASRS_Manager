@@ -16,7 +16,7 @@
 - 貨物檢索: 可根據貨物 ID 從系統中搜尋並取回指定的貨物 。
 - 3D 視覺化: 提供將任何一個儲位 (Bin) 的內部堆疊情況進行 3D 視覺化的功能，並可選擇在圖上顯示貨物 ID，方便分析與展示。
 
-![3D_visualization](./bin_visualization.png)
+![3D_visualization](./visualization/bin_visualization.png)
 
 ## 結果呈現
 
