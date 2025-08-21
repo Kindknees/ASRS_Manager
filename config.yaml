@@ -1,0 +1,12 @@
+online_priority: [4, 6, 3, 7, 2, 8, 1, 9]
+offline_priority: [1, 9, 2, 8, 3, 7, 4, 6]
+bins_for_pallets: [5]
+num_pallets: 60
+entrance_position: [0, 100, 0, 5]  # entrance position (x, y, z, bin_id)
+
+bin_config:
+  width: 50
+  height: 300
+  depth: 50
+  min_adjust_length: 5
+  weight_limit: 17
